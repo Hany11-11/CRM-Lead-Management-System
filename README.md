@@ -130,7 +130,7 @@ Create a `.env` file in the `CRM_backend` directory with the following variables
 ```
 NODE_ENV=development
 PORT=5000
-MONGO_URI=mongodb://localhost:27017/crm_db
+MONGO_URI=mongodb://localhost:27017/crm_assessment
 JWT_SECRET=your_jwt_secret_key_here_min_32_characters
 JWT_EXPIRE=7d
 CLIENT_URL=http://localhost:5173
