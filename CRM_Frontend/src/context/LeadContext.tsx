@@ -5,6 +5,7 @@ import {
   type ReactNode,
   useEffect,
   useRef,
+  useContext,
 } from "react";
 import type { Lead } from "../types";
 import {
@@ -13,6 +14,7 @@ import {
   type LeadQuery,
   type Salesperson,
 } from "../services/lead.service";
+import { useAuth } from "./AuthContext";
 
 interface LeadContextType {
   leads: Lead[];
@@ -34,7 +36,9 @@ interface LeadContextType {
 
 const LeadContext = createContext<LeadContextType | undefined>(undefined);
 
-export const LeadProvider = ({ children }: { children: ReactNode }) => {
+// Internal component that uses hooks
+const LeadProviderInternal = ({ children }: { children: ReactNode }) => {
+  const { isAuthenticated } = useAuth();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [salespeople, setSalespeople] = useState<Salesperson[]>([]);
@@ -76,17 +80,28 @@ export const LeadProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+  // Initialize data only when authenticated
   useEffect(() => {
+    if (!isAuthenticated) {
+      // Clear data when user logs out
+      setLeads([]);
+      setStats(null);
+      setSalespeople([]);
+      initRef.current = false;
+      return;
+    }
+
     if (initRef.current) return;
     initRef.current = true;
 
-    // Initialize data on mount only
+    // Initialize data when user is authenticated
     const initializeData = async () => {
+      setIsLoading(true);
       await Promise.all([fetchLeads(), fetchStats(), fetchSalespeople()]);
       setIsLoading(false);
     };
     initializeData();
-  }, [fetchLeads, fetchStats, fetchSalespeople]);
+  }, [isAuthenticated, fetchLeads, fetchStats, fetchSalespeople]);
 
   const addLead = useCallback(
     async (
@@ -200,4 +215,16 @@ export const LeadProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// Wrapper component to provide LeadProvider with access to hooks
+export const LeadProvider = ({ children }: { children: ReactNode }) => {
+  return <LeadProviderInternal>{children}</LeadProviderInternal>;
+};
+
 export { LeadContext };
+export const useLeadContext = () => {
+  const context = useContext(LeadContext);
+  if (!context) {
+    throw new Error("useLeadContext must be used within LeadProvider");
+  }
+  return context;
+};
