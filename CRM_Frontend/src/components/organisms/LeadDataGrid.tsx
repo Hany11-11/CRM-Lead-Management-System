@@ -6,7 +6,7 @@ import type { Lead } from "../../types";
 import { Badge } from "../atoms/Badge";
 import { Avatar } from "../atoms/Avatar";
 import { Button } from "../atoms/Button";
-import { formatCurrency, formatRelativeDate } from "../../utils/helpers";
+import { formatCurrency, formatDate } from "../../utils/helpers";
 import { useLeads } from "../../hooks/useLeads";
 
 type SortKey = keyof Pick<
@@ -261,7 +261,7 @@ export const LeadDataGrid = ({
                     </td>
                     <td className="px-6 py-4 text-right hidden sm:table-cell">
                       <span className="text-xs text-slate-500">
-                        {formatRelativeDate(lead.createdAt)}
+                        {formatDate(lead.createdAt)}
                       </span>
                     </td>
                     <td

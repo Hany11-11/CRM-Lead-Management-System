@@ -32,14 +32,14 @@ export const generateId = (): string => {
 };
 
 /**
- * Formats a number as USD currency
+ * Formats a number as Sri Lankan Rupee currency
  * @param value - Numeric value to format
- * @returns Formatted currency string (e.g., "$1,234")
+ * @returns Formatted currency string (e.g., "Rs. 1,234")
  */
 export const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: "LKR",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(value);
